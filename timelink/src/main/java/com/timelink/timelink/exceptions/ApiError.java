@@ -5,8 +5,11 @@ import lombok.Builder;
 import lombok.Getter;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 @Getter
 @Builder
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ApiError {
 
     private LocalDateTime timestamp;
