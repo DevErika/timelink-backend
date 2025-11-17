@@ -1,34 +1,40 @@
 package com.timelink.timelink.service.impl;
+
+import com.timelink.timelink.exceptions.EmailAlreadyExistsException;
+import com.timelink.timelink.exceptions.UserNotFoundException;
 import com.timelink.timelink.model.User;
 import com.timelink.timelink.repository.UserRepository;
 import com.timelink.timelink.service.UserService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    private final PasswordEncoder passwordEncoder;
 
-    public UserServiceImpl(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
-    
     @Override
     public User createUser(User user) {
+
         if (userRepository.existsByEmail(user.getEmail())) {
-            throw new RuntimeException("Email already exists"); 
+            throw new EmailAlreadyExistsException("Email already exists: " + user.getEmail());
         }
+
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
-
     }
+
     @Override
     public User getUserById(Long id) {
-        return userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        return userRepository
+                .findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
     }
 
     @Override
@@ -38,8 +44,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getUserByEmail(String email) {
-        return userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        return userRepository
+                .findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException("User not found with email: " + email));
     }
 
     @Override

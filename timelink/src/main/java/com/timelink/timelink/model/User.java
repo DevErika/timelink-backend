@@ -6,17 +6,19 @@ import jakarta.validation.constraints.Size;
 import jakarta.validation.constraints.Email;
 import lombok.*;
 
-
 @Entity
 @Table(name = "users")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder 
+@Builder
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @NotBlank(message = "Name is required")
     @Size(min = 2, message = "Name must have at least 2 characters")
     private String name;
@@ -24,23 +26,22 @@ public class User {
     @NotBlank(message = "Email is required")
     @Email(message = "Email format is invalid")
     @Column(unique = true, nullable = false)
-    private String email; 
+    private String email;
 
-    @NotBlank
-    private String password; 
+    @NotBlank(message = "Password is required")
+    private String password;
 
     private String address;
 
-    private String postalCode; 
+    private String postalCode;
 
     private String bio;
-    
+
     @Builder.Default
-    private Integer credits = 0; 
+    private Integer credits = 0;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Role role; 
-
-
+    @Builder.Default
+    private Role role = Role.USER;
 }
