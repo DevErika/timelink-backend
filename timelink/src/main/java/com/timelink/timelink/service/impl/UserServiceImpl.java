@@ -21,20 +21,16 @@ public class UserServiceImpl implements UserService {
     @Override
     public User createUser(User user) {
 
-        // check email duplication
         if (userRepository.existsByEmail(user.getEmail())) {
             throw new EmailAlreadyExistsException("Email already exists: " + user.getEmail());
         }
 
-        // encode password
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
-        // default credits
         if (user.getCredits() == null) {
             user.setCredits(0);
         }
 
-        // default role
         if (user.getRole() == null) {
             user.setRole(com.timelink.timelink.model.Role.USER);
         }

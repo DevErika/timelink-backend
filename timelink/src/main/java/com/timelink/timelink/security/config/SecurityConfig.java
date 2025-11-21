@@ -32,8 +32,7 @@ public class SecurityConfig {
 
     private final ObjectProvider<CustomUserDetailsService> customUserDetailsService;
 
-    // 1. CORS
-    @Bean
+     @Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
             @Override
@@ -46,8 +45,6 @@ public class SecurityConfig {
             }
         };
     }
-
-    // 2. Security filter chain
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
@@ -71,8 +68,6 @@ public class SecurityConfig {
 
         return http.build();
     }
-
-    // 3. AuthenticationProvider (NOW FIXED)
         @Bean
         public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
@@ -81,14 +76,10 @@ public class SecurityConfig {
         return provider;
 }
 
-
-    // 4. AuthenticationManager
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
-
-    // 5. PasswordEncoder
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

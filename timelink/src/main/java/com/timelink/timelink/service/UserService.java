@@ -11,7 +11,4 @@ public interface UserService {
     User getUserByEmail(String email);
     boolean existsByEmail(String email); 
 
-
-
-    
 }
