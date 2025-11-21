@@ -1,7 +1,6 @@
 package com.timelink.timelink.service.impl;
 
 import com.timelink.timelink.exceptions.EmailAlreadyExistsException;
-import com.timelink.timelink.exceptions.UserNotFoundException;
 import com.timelink.timelink.model.User;
 import com.timelink.timelink.repository.UserRepository;
 import com.timelink.timelink.service.UserService;
@@ -22,19 +21,31 @@ public class UserServiceImpl implements UserService {
     @Override
     public User createUser(User user) {
 
+        // check email duplication
         if (userRepository.existsByEmail(user.getEmail())) {
             throw new EmailAlreadyExistsException("Email already exists: " + user.getEmail());
         }
 
+        // encode password
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+        // default credits
+        if (user.getCredits() == null) {
+            user.setCredits(0);
+        }
+
+        // default role
+        if (user.getRole() == null) {
+            user.setRole(com.timelink.timelink.model.Role.USER);
+        }
+
         return userRepository.save(user);
     }
 
     @Override
     public User getUserById(Long id) {
-        return userRepository
-                .findById(id)
-                .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
+        return userRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
     }
 
     @Override
@@ -44,9 +55,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getUserByEmail(String email) {
-        return userRepository
-                .findByEmail(email)
-                .orElseThrow(() -> new UserNotFoundException("User not found with email: " + email));
+        return userRepository.findByEmail(email)
+            .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
     }
 
     @Override
